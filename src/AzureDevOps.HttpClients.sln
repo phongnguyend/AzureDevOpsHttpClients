@@ -5,7 +5,7 @@ VisualStudioVersion = 18.1.11312.151 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureDevOps.NuGetFeed", "AzureDevOps.NuGetFeed\AzureDevOps.NuGetFeed.csproj", "{973DE0D1-AE0D-31FD-2461-83B63934F3EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureDevOps.VariableGroup", "..\AzureDevOps.VariableGroup\AzureDevOps.VariableGroup.csproj", "{28AB0C1D-83A2-41F7-ABAA-407EFBC8BADD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureDevOps.VariableGroup", "AzureDevOps.VariableGroup\AzureDevOps.VariableGroup.csproj", "{28AB0C1D-83A2-41F7-ABAA-407EFBC8BADD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
