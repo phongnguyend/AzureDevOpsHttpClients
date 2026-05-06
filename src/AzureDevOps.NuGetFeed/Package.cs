@@ -1,4 +1,4 @@
-namespace AzureDevOps.NuGetFeedManager;
+namespace AzureDevOps.NuGetFeed;
 
 public class FeedInfo
 {
