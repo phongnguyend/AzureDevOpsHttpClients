@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.1.11312.151 d18.0
+VisualStudioVersion = 18.1.11312.151
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureDevOps.NuGetFeed", "AzureDevOps.NuGetFeed\AzureDevOps.NuGetFeed.csproj", "{973DE0D1-AE0D-31FD-2461-83B63934F3EB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureDevOps.VariableGroup", "AzureDevOps.VariableGroup\AzureDevOps.VariableGroup.csproj", "{28AB0C1D-83A2-41F7-ABAA-407EFBC8BADD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureDevOps.Pipeline", "AzureDevOps.Pipeline\AzureDevOps.Pipeline.csproj", "{FFA15900-EBA6-40B7-B68C-67D0CE3A9990}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{28AB0C1D-83A2-41F7-ABAA-407EFBC8BADD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28AB0C1D-83A2-41F7-ABAA-407EFBC8BADD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28AB0C1D-83A2-41F7-ABAA-407EFBC8BADD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFA15900-EBA6-40B7-B68C-67D0CE3A9990}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFA15900-EBA6-40B7-B68C-67D0CE3A9990}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFA15900-EBA6-40B7-B68C-67D0CE3A9990}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFA15900-EBA6-40B7-B68C-67D0CE3A9990}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
