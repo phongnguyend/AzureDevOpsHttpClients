@@ -30,7 +30,7 @@ if (pipelines.Count == 0)
 }
 
 // Run the first pipeline
-var firstPipeline = pipelines.First(x => x.Name == "Build");
+var firstPipeline = pipelines.First(x => x.Name == "Release");
 Console.WriteLine($"\nRunning pipeline [{firstPipeline.Id}] {firstPipeline.Name} ...");
 var run = await client.RunPipelineAsync(firstPipeline.Id, new RunPipelineRequest
 {
@@ -38,8 +38,14 @@ var run = await client.RunPipelineAsync(firstPipeline.Id, new RunPipelineRequest
     {
         Repositories = new RunRepositoryResources
         {
-            Self = new RunRepositoryResource { RefName = "refs/heads/main" }
+            Self = new RunRepositoryResource { RefName = "refs/heads/azure-pipelines" }
         }
+    },
+    TemplateParameters = new Dictionary<string, string>
+    {
+        ["buildRunId"] = "2009",
+        ["environment"] = "DEV",
+        ["serviceConnection"] = "xxx"
     }
 });
 Console.WriteLine($"  Run [{run.Id}] started - State: {run.State}");
