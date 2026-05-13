@@ -30,7 +30,7 @@ public class VariableGroupClient
     public async Task<List<VariableGroup>> ListVariableGroupsAsync()
     {
         var response = await _httpClient.GetAsync($"{_connectionInfo.BaseUrl}?{ApiVersion}");
-        response.EnsureSuccessStatusCode();
+        await EnsureSuccessAsync(response);
         var body = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<VariableGroupsResponse>(body, _jsonOptions).Value;
     }
@@ -38,7 +38,7 @@ public class VariableGroupClient
     public async Task<VariableGroup> GetVariableGroupAsync(int groupId)
     {
         var response = await _httpClient.GetAsync($"{_connectionInfo.BaseUrl}/{groupId}?{ApiVersion}");
-        response.EnsureSuccessStatusCode();
+        await EnsureSuccessAsync(response);
         var body = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<VariableGroup>(body, _jsonOptions);
     }
@@ -59,7 +59,7 @@ public class VariableGroupClient
         }
 
         var response = await _httpClient.PostAsJsonAsync($"{_connectionInfo.BaseUrl}?{ApiVersion}", request, _jsonOptions);
-        response.EnsureSuccessStatusCode();
+        await EnsureSuccessAsync(response);
         var body = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<VariableGroup>(body, _jsonOptions);
     }
@@ -80,7 +80,7 @@ public class VariableGroupClient
         }
 
         var response = await _httpClient.PutAsJsonAsync($"{_connectionInfo.BaseUrl}/{groupId}?{ApiVersion}", request, _jsonOptions);
-        response.EnsureSuccessStatusCode();
+        await EnsureSuccessAsync(response);
         var body = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<VariableGroup>(body, _jsonOptions);
     }
@@ -88,7 +88,7 @@ public class VariableGroupClient
     public async Task DeleteVariableGroupAsync(int groupId, string projectId)
     {
         var response = await _httpClient.DeleteAsync($"{_connectionInfo.DeleteBaseUrl}/{groupId}?projectIds={projectId}&{ApiVersion}");
-        response.EnsureSuccessStatusCode();
+        await EnsureSuccessAsync(response);
     }
 
     // Variable CRUD within a specific group
@@ -158,5 +158,14 @@ public class VariableGroupClient
         };
 
         return await UpdateVariableGroupAsync(groupId, updateRequest);
+    }
+
+    private static async Task EnsureSuccessAsync(HttpResponseMessage response)
+    {
+        if (!response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            throw new HttpRequestException($"Request failed with status {(int)response.StatusCode} ({response.ReasonPhrase}): {body}", null, response.StatusCode);
+        }
     }
 }

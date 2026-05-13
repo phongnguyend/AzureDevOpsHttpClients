@@ -28,7 +28,7 @@ public class PipelineClient
     public async Task<List<Pipeline>> ListPipelinesAsync()
     {
         var response = await _httpClient.GetAsync($"{_connectionInfo.BaseUrl}?{ApiVersion}");
-        response.EnsureSuccessStatusCode();
+        await EnsureSuccessAsync(response);
         var body = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<PipelinesResponse>(body, _jsonOptions)!.Value;
     }
@@ -37,7 +37,7 @@ public class PipelineClient
     {
         request ??= new RunPipelineRequest();
         var response = await _httpClient.PostAsJsonAsync($"{_connectionInfo.BaseUrl}/{pipelineId}/runs?{ApiVersion}", request, _jsonOptions);
-        response.EnsureSuccessStatusCode();
+        await EnsureSuccessAsync(response);
         var body = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<PipelineRun>(body, _jsonOptions)!;
     }
@@ -45,7 +45,7 @@ public class PipelineClient
     public async Task<List<PipelineRun>> ListRunsAsync(int pipelineId)
     {
         var response = await _httpClient.GetAsync($"{_connectionInfo.BaseUrl}/{pipelineId}/runs?{ApiVersion}");
-        response.EnsureSuccessStatusCode();
+        await EnsureSuccessAsync(response);
         var body = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<RunsResponse>(body, _jsonOptions)!.Value;
     }
@@ -53,8 +53,17 @@ public class PipelineClient
     public async Task<PipelineRun> GetRunAsync(int pipelineId, int runId)
     {
         var response = await _httpClient.GetAsync($"{_connectionInfo.BaseUrl}/{pipelineId}/runs/{runId}?{ApiVersion}");
-        response.EnsureSuccessStatusCode();
+        await EnsureSuccessAsync(response);
         var body = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<PipelineRun>(body, _jsonOptions)!;
+    }
+
+    private static async Task EnsureSuccessAsync(HttpResponseMessage response)
+    {
+        if (!response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            throw new HttpRequestException($"Request failed with status {(int)response.StatusCode} ({response.ReasonPhrase}): {body}", null, response.StatusCode);
+        }
     }
 }
