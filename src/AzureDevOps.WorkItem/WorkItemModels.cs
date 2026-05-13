@@ -131,3 +131,9 @@ public class Attachment
     public string Url { get; set; }
     public string Comment { get; set; }
 }
+
+public class AttachmentReference
+{
+    public string Id { get; set; }
+    public string Url { get; set; }
+}

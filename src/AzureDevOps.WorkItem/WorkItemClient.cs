@@ -255,6 +255,47 @@ public class WorkItemClient
             })
             .ToList() ?? new List<Attachment>();
     }
+
+    public async Task<AttachmentReference> CreateAttachmentAsync(string filePath)
+    {
+        var fileName = Uri.EscapeDataString(Path.GetFileName(filePath));
+        var url = $"https://dev.azure.com/{_connectionInfo.Organization}/{Uri.EscapeDataString(_connectionInfo.Project)}/_apis/wit/attachments?fileName={fileName}&{ApiVersion}";
+
+        var fileBytes = await File.ReadAllBytesAsync(filePath);
+        var content = new ByteArrayContent(fileBytes);
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+
+        var response = await _httpClient.PostAsync(url, content);
+        await EnsureSuccessAsync(response);
+        var body = await response.Content.ReadAsStringAsync();
+
+        return JsonSerializer.Deserialize<AttachmentReference>(body, _jsonOptions)!;
+    }
+
+    public async Task AddAttachmentToWorkItemAsync(int workItemId, AttachmentReference attachment, string comment = null)
+    {
+        var url = $"{_connectionInfo.BaseUrl}/workitems/{workItemId}?{ApiVersion}";
+
+        var operations = new List<object>
+        {
+            new
+            {
+                op = "add",
+                path = "/relations/-",
+                value = new
+                {
+                    rel = "AttachedFile",
+                    url = attachment.Url,
+                    attributes = new { comment = comment ?? string.Empty }
+                }
+            }
+        };
+
+        var patchBody = JsonSerializer.Serialize(operations);
+        var content = new StringContent(patchBody, System.Text.Encoding.UTF8, "application/json-patch+json");
+        var response = await _httpClient.PatchAsync(url, content);
+        await EnsureSuccessAsync(response);
+    }
 }
 
 internal class WorkItemFieldsConverter : JsonConverter<WorkItemFields>
