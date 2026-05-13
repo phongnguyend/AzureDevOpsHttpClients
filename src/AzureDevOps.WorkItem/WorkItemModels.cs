@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace AzureDevOps.WorkItem;
 
 public class ConnectionInfo
@@ -50,6 +52,23 @@ public class WorkItem
     public string Url { get; set; }
 
     public WorkItemFields Fields { get; set; }
+
+    public List<string> ImageLinks
+    {
+        get
+        {
+            var links = new List<string>();
+            var htmlFields = new[] { Fields?.SystemDescription, Fields?.AcceptanceCriteria };
+            foreach (var html in htmlFields)
+            {
+                if (string.IsNullOrEmpty(html))
+                    continue;
+                foreach (Match match in Regex.Matches(html, @"<img[^>]+src\s*=\s*[""']([^""']+)[""']", RegexOptions.IgnoreCase))
+                    links.Add(match.Groups[1].Value);
+            }
+            return links;
+        }
+    }
 }
 
 public class WorkItemFields
