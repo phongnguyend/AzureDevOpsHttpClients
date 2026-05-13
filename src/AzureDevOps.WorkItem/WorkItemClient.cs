@@ -175,6 +175,62 @@ public class WorkItemClient
             throw new HttpRequestException($"Request failed with status {(int)response.StatusCode} ({response.ReasonPhrase}): {body}", null, response.StatusCode);
         }
     }
+
+    public async Task DownloadImagesAsync(WorkItem workItem, string outputFolder)
+    {
+        var imageLinks = workItem.ImageLinks;
+        if (imageLinks.Count == 0)
+            return;
+
+        var workItemFolder = Path.Combine(outputFolder, workItem.Id.ToString());
+        Directory.CreateDirectory(workItemFolder);
+
+        foreach (var imageUrl in imageLinks)
+        {
+            var uri = new Uri(imageUrl);
+            if (!uri.Host.Equals("dev.azure.com", StringComparison.OrdinalIgnoreCase))
+            {
+                Console.WriteLine($"    Skipped (external): {imageUrl}");
+                continue;
+            }
+
+            var response = await _httpClient.GetAsync(imageUrl);
+            await EnsureSuccessAsync(response);
+
+            var fileName = uri.Query
+                .TrimStart('?')
+                .Split('&')
+                .Select(p => p.Split('='))
+                .Where(p => p.Length == 2 && p[0].Equals("fileName", StringComparison.OrdinalIgnoreCase))
+                .Select(p => Uri.UnescapeDataString(p[1]))
+                .FirstOrDefault()
+                ?? Path.GetFileName(uri.LocalPath);
+
+            var extension = Path.GetExtension(fileName);
+            if (string.IsNullOrEmpty(extension))
+            {
+                var contentType = response.Content.Headers.ContentType?.MediaType;
+                extension = contentType switch
+                {
+                    "image/png"     => ".png",
+                    "image/jpeg"    => ".jpg",
+                    "image/gif"     => ".gif",
+                    "image/webp"    => ".webp",
+                    "image/bmp"     => ".bmp",
+                    "image/svg+xml" => ".svg",
+                    _ => string.Empty
+                };
+            }
+
+            if (string.IsNullOrEmpty(fileName) || string.IsNullOrEmpty(Path.GetExtension(fileName)))
+                fileName = $"{Guid.NewGuid()}{extension}";
+
+            var filePath = Path.Combine(workItemFolder, fileName);
+            var imageBytes = await response.Content.ReadAsByteArrayAsync();
+            await File.WriteAllBytesAsync(filePath, imageBytes);
+            Console.WriteLine($"    Downloaded: {filePath}");
+        }
+    }
 }
 
 internal class WorkItemFieldsConverter : JsonConverter<WorkItemFields>
