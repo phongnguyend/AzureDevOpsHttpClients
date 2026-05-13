@@ -53,6 +53,8 @@ public class WorkItem
 
     public WorkItemFields Fields { get; set; }
 
+    public List<WorkItemRelation> Relations { get; set; } = new();
+
     public List<string> ImageLinks
     {
         get
@@ -108,4 +110,24 @@ public class CloneResult
     public WorkItem Feature { get; set; }
 
     public List<WorkItem> UserStories { get; set; } = new();
+}
+
+public class WorkItemRelation
+{
+    public string Rel { get; set; }
+    public string Url { get; set; }
+    public WorkItemRelationAttributes Attributes { get; set; }
+}
+
+public class WorkItemRelationAttributes
+{
+    public string Name { get; set; }
+    public string Comment { get; set; }
+}
+
+public class Attachment
+{
+    public string Name { get; set; }
+    public string Url { get; set; }
+    public string Comment { get; set; }
 }

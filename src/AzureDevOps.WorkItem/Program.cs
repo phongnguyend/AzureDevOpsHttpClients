@@ -27,7 +27,24 @@ foreach (var feature in features)
     var userStories = await client.GetUserStoriesByFeatureAsync(feature.Id);
     Console.WriteLine($"\nUser Stories for Feature [{feature.Id}] '{feature.Fields.SystemTitle}': {userStories.Count} item(s)");
     foreach (var story in userStories)
+    {
         Console.WriteLine($"  [{story.Id}] {story.Fields.SystemTitle} - {story.Fields.SystemState} (Assigned: {story.Fields.SystemAssignedTo ?? "Unassigned"})");
+        var attachments = await client.GetAttachmentsAsync(story.Id);
+        if (attachments.Count > 0)
+        {
+            Console.WriteLine($"    Attachments ({attachments.Count}):");
+            foreach (var attachment in attachments)
+                Console.WriteLine($"      - {attachment.Name} {attachment.Url}");
+        }
+
+        var imageLinks = story.ImageLinks;
+        if (imageLinks.Count > 0)
+        {
+            Console.WriteLine($"    Inline Images ({imageLinks.Count}):");
+            foreach (var imageLink in imageLinks)
+                Console.WriteLine($"      - {imageLink}");
+        }
+    }
 
     // Download images from the feature and its user stories
     //Console.WriteLine($"\nDownloading images for Feature [{feature.Id}]...");

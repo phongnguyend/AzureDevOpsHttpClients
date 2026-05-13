@@ -231,6 +231,30 @@ public class WorkItemClient
             Console.WriteLine($"    Downloaded: {filePath}");
         }
     }
+
+    public async Task<List<Attachment>> GetAttachmentsAsync(int workItemId)
+    {
+        var url = $"{_connectionInfo.BaseUrl}/workitems/{workItemId}?$expand=relations&{ApiVersion}";
+        var response = await _httpClient.GetAsync(url);
+        await EnsureSuccessAsync(response);
+        var body = await response.Content.ReadAsStringAsync();
+
+        var workItem = JsonSerializer.Deserialize<WorkItem>(body, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters = { new WorkItemFieldsConverter() }
+        });
+
+        return workItem?.Relations
+            .Where(r => r.Rel == "AttachedFile")
+            .Select(r => new Attachment
+            {
+                Name = r.Attributes?.Name,
+                Comment = r.Attributes?.Comment,
+                Url = r.Url
+            })
+            .ToList() ?? new List<Attachment>();
+    }
 }
 
 internal class WorkItemFieldsConverter : JsonConverter<WorkItemFields>
